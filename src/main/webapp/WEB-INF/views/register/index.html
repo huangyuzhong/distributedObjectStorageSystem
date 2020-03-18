@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<script src="/js/jquery.js"></script>
+<script>
+    /*检查用户名是否合法*/
+    $(function () {
+        $("#username").blur(function () {
+            var value=$(this).val();
+            $.ajax({
+                type:"post",
+                url:"checkUsername",
+                data:{
+                    username:value
+                },
+                dataType:"json",
+                success:function (msg) {
+                        $("#usernameTip").text(msg.msg)
+                }
+            });
+        });
+
+        /*检查两次密码是否一致*/
+        $("#confirmPassword").blur(function () {
+            var pwd=$("#password").val();
+            var ConfirmPwd=$("#confirmPassword").val();
+            if (pwd!=ConfirmPwd){
+                $("#confirmPwdTip").text("两次输入的密码不一致");
+            }else {
+                $("#confirmPwdTip").text("密码可用");
+            }
+        })
+    })
+    /*保存用户信息*/
+    function saveBtn() {
+        if($("#usernameTip").text()!="用户名可用"){
+            alert("用户名不正确");
+            return false;
+        }
+        if($("#confirmPwdTip").text()!="密码可用"){
+            alert("密码输入不正确");
+            return false;
+        }
+        var username=$("#username").val();
+        var password=$("#password").val();
+        var phone=$("#phone").val();
+        var email=$("#email").val();
+        $.ajax({
+            type: "post",
+            url:"save",
+            data:{
+                username:username,
+                password:password,
+                phone:phone,
+                email:email
+            },
+            dataType: "json",
+            success:function (msg) {
+                if(msg.code=="001"){
+                    alert("注册成功!"+'\r\n'+"即将返回登陆");
+                    window.location.href="/login/index";
+                }else {
+                    alert("注册失败");
+                }
+            }
+        })
+    }
+</script>
+<body>
+<!--前端需要对每个输入框进行检查，不允许强行提交-->
+<h1>用户注册</h1>
+<input type="text" placeholder="用户名" id="username">
+<span id="usernameTip"></span>
+<br/>
+<input type="password" placeholder="密码" id="password">
+<br/>
+<input type="password" placeholder="确认密码" id="confirmPassword">
+<span id="confirmPwdTip"></span>
+<br/>
+<input type="text" placeholder="手机号" id="phone">
+<br/>
+<input type="text" placeholder="E-mail" id="email">
+<input type="button" value="提交" onclick="saveBtn()">
+<br/>
+<span>已有账号?•
+<a href="../login/index">返回登陆</a></span>
+</body>
+</html>

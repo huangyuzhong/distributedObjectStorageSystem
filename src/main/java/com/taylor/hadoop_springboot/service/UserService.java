@@ -1,7 +1,8 @@
 package com.taylor.hadoop_springboot.service;
 
-import com.taylor.hadoop_springboot.entity.User;
 import com.baomidou.mybatisplus.service.IService;
+import com.taylor.hadoop_springboot.entity.User;
+import net.sf.json.JSONObject;
 
 /**
  * <p>
@@ -11,6 +12,8 @@ import com.baomidou.mybatisplus.service.IService;
  * @author taylor
  * @since 2020-03-18
  */
-public interface UserService  {
+public interface UserService extends IService {
     Integer toLogin(String username,String password);
+    JSONObject checkUsername(String username);
+    JSONObject saveUser(User user);
 }
