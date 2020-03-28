@@ -1,0 +1,3 @@
+ - cookie[0]   user  token
+ - redis[token] username
+ - redis['username'Path] pathForNow

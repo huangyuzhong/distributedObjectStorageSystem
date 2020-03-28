@@ -2,9 +2,174 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>分布式对象存储</title>
 </head>
+<script src="https://cdn.bootcss.com/jquery/1.9.1/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+<style>
+    html {
+        padding: 10px;
+    }
+
+    .byRight {
+        float: right;
+    }
+
+    .allPadding {
+        padding: 10px;
+    }
+
+    .bottonPadding {
+        padding-bottom: 10px;
+    }
+
+    .path {
+        font-size: 11px;
+    }
+    .buttonToA{
+        /*消除button的默认样式*/
+        margin: 0;
+        padding: 0;
+        border: 0px;
+        outline: none;
+        background-color: white;
+    }
+</style>
+<script>
+    function lgoutBtnClicked() {
+        window.location.href = "/login/lgout";
+    }
+    (function () {
+        /*显示上条操作结果*/
+        alert("${json.msg}");
+
+        /*显示当前目录文件*/
+        function ShowList() {
+            $("#myTbody").empty();
+            $.ajax({
+                type: "post",
+                url: "/file/getPresentFileList",
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code="001"){
+                        for (var i in msg.dirList) {
+                            var html = $("<tr></tr>");
+                            html.append("<td><input type='checkbox'></td>");
+                            html.append("<td><a class='filename' data-opration='openDir'>" + msg.dirList[i].name + "</a></td>");
+                            html.append("<td>-</td>");
+                            html.append("<td>" + msg.dirList[i].time + "</td>");
+                            html.append("<td>" +
+                                "<div class='btn-group bottonPadding' role='group' aria-label='...'>" +
+                                "<button type='button' class='btn btn-default' data-opration='renamer'>重命名</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='move'>移动</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='delete'>删除</button>" +
+                                "</div></td>");
+                            html.appendTo("#myTbody");
+                        }
+                        for (var i in msg.fileList) {
+                            var html = $("<tr></tr>");
+                            html.append("<td><input type='checkbox' ></td>");
+                            html.append("<td><a class='filename' data-opration='openDir'>" + msg.fileList[i].name + "</a></td>");
+                            html.append("<td>" + msg.fileList[i].len + "</td>");
+                            html.append("<td>" + msg.fileList[i].time + "</td>");
+                            html.append("<td>" +
+                                "<div class='btn-group bottonPadding' role='group' aria-label='...'>" +
+                                "<button type='button' class='btn btn-default' data-opration='renamer'>重命名</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='move'>移动</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='delete'>删除</button>" +
+                                "</div></td>");
+                            html.appendTo("#myTbody");
+                        }
+                        EventHandler();
+                    }else console.log(msg.msg);
+                }
+            });
+        }
+        function EventHandler() {
+            /*重命名*/
+            $("button[data-opration=renamer]").off().on('click', function () {
+                var oldName = $(this).parents('tr').find('.filename').html();
+                var currentFileName = $(this).parents('tr').find('.filename')
+                console.log($("#renameTarget").html());
+                var newName = prompt("请输入新名称");
+                if (newName != null && newName != "") {
+                    location.href="/file/rename?oldName="+oldName+"&newName="+newName;
+
+                }
+              
+            });
+        }
+
+        ShowList();
+    })();
+
+
+</script>
 <body>
-$END$
+<ul class="nav nav-tabs">
+    <li role="presentation" class="active"><a href="#">网盘</a></li>
+    <li role="presentation"><a href="#">搜索</a></li>
+    <li role="presentation"><a href="#">个人中心</a></li>
+
+    <div class="btn-group byRight" role="group" aria-label="...">
+        <button type="button" class="btn btn-default" onclick="lgoutBtnClicked()">退出登录</button>
+    </div>
+
+</ul>
+<div class="row allPadding">
+    <div class="col-md-1">
+        <div class="btn-group-vertical" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" data-opration="allFile">全部文件</button>
+            <button type="button" class="btn btn-default">文档</button>
+            <button type="button" class="btn btn-default">音乐</button>
+            <button type="button" class="btn btn-default">图片</button>
+            <button type="button" class="btn btn-default">视频</button>
+            <button type="button" class="btn btn-default">其他</button>
+        </div>
+    </div>
+    <div class="col-md-11 ">
+        <div class="btn-group bottonPadding">
+            <button type="button" class="btn btn-default">上传文件</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">上传文件夹</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#">上传文件夹</a></li>
+            </ul>
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <div class="btn-group bottonPadding" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" data-opration="mkdir">新建目录</button>
+        </div>
+        <div id="breadPath">
+            <button class="path buttonToA" id="root" data-opration="openTheDir">全部文件</button>
+        </div>
+
+        <div style="height: 470px;overflow:auto">
+
+            <form action="" method="post">
+                <table class="table table-hover">
+                    <tr>
+                        <th><input type="checkbox">全选</input></th>
+                        <th>文件名</th>
+                        <th>文件大小</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                    <tbody id="myTbody"></tbody>
+                </table>
+            </form>
+
+        </div>
+
+
+
+    </div>
+</div>
+
 </body>
 </html>

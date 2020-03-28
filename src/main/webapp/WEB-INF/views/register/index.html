@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <title>注册</title>
 </head>
-<script src="/js/jquery.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" ></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 <script>
     /*检查用户名是否合法*/
     $(function () {
@@ -69,23 +72,71 @@
         })
     }
 </script>
+<style>
+    .form-bd{
+        margin-top:5%;
+    }
+    #confirmPwdTip,#usernameTip{
+        float: right;
+    }
+    html{
+        padding: 10px;
+    }
+</style>
 <body>
+
+<div class="row form-bd" >
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <h1 class="text-center">用户注册</h1>
+
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">用户名</span>
+            <input type="text" class="form-control" placeholder="用户名" aria-describedby="basic-addon1" id="username">
+        </div>
+
+        <span id="usernameTip"></span><br/>
+
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon2">&nbsp;&nbsp;密码&nbsp;&nbsp;</span>
+            <input type="password" class="form-control" placeholder="密码" aria-describedby="basic-addon1" id="password">
+        </div>
+
+        <br/>
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon3">确认密码</span>
+            <input type="password" class="form-control" placeholder="确认密码" aria-describedby="basic-addon1" id="confirmPassword">
+        </div>
+
+        <span id="confirmPwdTip"></span><br/>
+
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon4">+86</span>
+            <input type="text" class="form-control" placeholder="手机号" aria-describedby="basic-addon1" id="phone">
+        </div>
+        <br/>
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon5">邮箱</span>
+            <input type="text" class="form-control" placeholder="邮箱" aria-describedby="basic-addon1" id="email">
+        </div>
+        <br/>
+        <input type="button" value="提交" onclick="saveBtn()">
+        <br/>
+        <p class="text-right">已有账号?•
+        <a href="../login/index">返回登陆</a>
+        </p>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
 <!--前端需要对每个输入框进行检查，不允许强行提交-->
-<h1>用户注册</h1>
-<input type="text" placeholder="用户名" id="username">
-<span id="usernameTip"></span>
+
+
+
+
+
+
 <br/>
-<input type="password" placeholder="密码" id="password">
-<br/>
-<input type="password" placeholder="确认密码" id="confirmPassword">
-<span id="confirmPwdTip"></span>
-<br/>
-<input type="text" placeholder="手机号" id="phone">
-<br/>
-<input type="text" placeholder="E-mail" id="email">
-<input type="button" value="提交" onclick="saveBtn()">
-<br/>
-<span>已有账号?•
-<a href="../login/index">返回登陆</a></span>
+
 </body>
 </html>

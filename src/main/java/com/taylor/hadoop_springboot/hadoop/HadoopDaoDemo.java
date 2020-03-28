@@ -1,17 +1,17 @@
 package com.taylor.hadoop_springboot.hadoop;
 
+import com.taylor.hadoop_springboot.entity.FileEntity;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.IOUtils;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.stereotype.Repository;
 
-
+import java.io.IOException;
 import java.net.URI;
-
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -19,7 +19,7 @@ import org.apache.hadoop.fs.Path;
 
 
 @Repository
-public class FileDao {
+public class HadoopDaoDemo {
     public String url = "hdfs://hadoop01:9000";
     Configuration con = null;
     FileSystem fileSystem = null;
@@ -89,7 +89,7 @@ public class FileDao {
     @Test
     public void upload() throws Exception {
 
-        Path originPath = new Path("D:/file/PS/2020-02-23_125700.png");
+        Path originPath = new Path("F:\\photo\\匿名头像.png");
         Path targetPath = new Path("/");
         fileSystem.copyFromLocalFile(originPath, targetPath);
 
@@ -141,6 +141,30 @@ public class FileDao {
         while (re.hasNext()) {
             LocatedFileStatus locatedFileStatus = re.next();
             System.out.println(locatedFileStatus.getPath());
+        }
+    }
+
+    /**
+     * 测试获取和更改所有者
+     *
+     */
+    @Test
+    public void ownerOp() throws IOException {
+        RemoteIterator<LocatedFileStatus> re=fileSystem.listFiles(new Path("/"),true);
+        while (re.hasNext()){
+            LocatedFileStatus locatedFileStatus=re.next();
+            if (locatedFileStatus.getPath().getName().equals("timg.jpg")){
+                System.out.println("owner:"+locatedFileStatus.getOwner());
+                System.out.println("hashcode:"+locatedFileStatus.hashCode());
+                System.out.println("permission:"+locatedFileStatus.getPermission());
+                Path path=new Path("/timg.jpg");
+                FsPermission permission=new FsPermission("770");
+                fileSystem.setPermission(path,permission);
+                System.out.println("permission:"+locatedFileStatus.getPermission());
+                
+            }
+
+
         }
     }
 }

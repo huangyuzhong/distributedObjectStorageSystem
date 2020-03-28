@@ -2,9 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>测试页面</title>
+    <title>BUGer导航页</title>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" ></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 </head>
+<style>
+    .searchBtn{
+        padding: 10px 200px 10px 200px;
+    }
+    .buttonPadding{
+        padding-left: 40px;
+        padding-top: 160px;
+    }
+    .iframePadding{
+        padding-left: 60px;
+    }
+    .iiframePadding{
+        padding-left: 120px;
+    }
+
+</style>
+<script>
+  /*  function f(){
+        document.getElementById('bingSearch').src='https://cn.bing.com/search?q=%E5%8F%91&ensearch=1'
+    }*/
+  $(function(){
+
+      $('#basic-url').bind('input propertychange', function() {
+          var text=$("#basic-url").val();
+          $("#bingSearch").attr("src",'https://cn.bing.com/search?q='+text+'&ensearch=1');
+          $("#baiduSearch").attr("src",'https://www.baidu.com/s?wd='+text);
+          if ($('#basic-url').blur()){
+              $('#basic-url').focus();
+          }
+      });
+
+  })
+
+</script>
 <body>
-测试ftl模板是否正常渲染：${name}
+    <div class="col-md-1">
+        <div class="btn-group-vertical btn-group-lg buttonPadding" role="group" aria-label="...">
+            <a class="btn btn-default" role="button" href="http://www.30036.xyz/" >BUGer</a>
+            <a class="btn btn-default" role="button" href="https://www.bilibili.com/" >Bilibili</a>
+            <a class="btn btn-default" role="button" href="https://www.google.com/" >Google</a>
+            <a class="btn btn-default" role="button" href="https://www.youtube.com/" >Youtube</a>
+            <a class="btn btn-default" role="button" href="https://github.com/taylor-3524?tab=repositories" >Github</a>
+            <a class="btn btn-default" role="button" href="http://jwcas.cczu.edu.cn/login" >教务系统</a>
+            <a class="btn btn-default" role="button" href="http://sjjx.cczu.edu.cn/bylw/Index.aspx" >毕设系统</a>
+            <a class="btn btn-default" role="button" href="https://v3.bootcss.com/css/" >全局CSS</a>
+            <a class="btn btn-default" role="button" href="https://v3.bootcss.com/components/" >js组件</a>
+            <a class="btn btn-default" role="button" href="https://xn--i2ru8q2qg.com/user" >喵帕斯</a>
+            <a class="btn btn-default" role="button" href="http://xn--i8s168f.cn:8888/" >腾讯BT</a>
+            <a class="btn btn-default" role="button" href="http://ali.30036.xyz:8888/admin/" >阿里BT</a>
+            <a class="btn btn-default" role="button" href="http://idea.medeming.com/jets/" >IDEA激活码</a>
+
+        </div>
+    </div>
+    <div class="col-md-11">
+        <div class="input-group searchBtn" >
+            <span class="input-group-addon" id="basic-addon3">给我搜！</span>
+            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" autofocus="autofocus">
+        </div>
+        <div class="row">
+            <div class="col-md-6 iiframePadding">
+                <iframe src="http://news.baidu.com/"
+                        width="740" height="880"
+                        frameborder="1"
+                        scrolling="auto"
+                        id="baiduSearch">
+
+                </iframe>
+            </div>
+            <div class="col-md-6 " >
+                <iframe src="https://cn.bing.com/"
+                        width="780" height="880"
+                        frameborder="1"
+                        scrolling="auto"
+                        id="bingSearch">
+
+                </iframe>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

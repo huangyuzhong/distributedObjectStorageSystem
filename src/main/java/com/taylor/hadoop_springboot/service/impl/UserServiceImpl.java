@@ -7,9 +7,20 @@ import com.taylor.hadoop_springboot.service.UserService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 
 
+import org.apache.http.HttpRequest;
+
+import org.apache.http.HttpResponse;
+import org.junit.Test;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.awt.*;
+import java.util.UUID;
 
 /**
  * <p>
@@ -21,24 +32,20 @@ import javax.annotation.Resource;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl implements UserService {
+    private int deadTime=60*60*24; //cookie有效时长
+
     @Resource
     UserMapper userMapper;
 
     /**
-     * 登录验证
-     *
-     * @param username
-     * @param password
-     * @return
+     * 测试redis
      */
-    @Override
-    public Integer toLogin(String username, String password) {
-        EntityWrapper<User> ew = new EntityWrapper<>();
-        ew.eq("username", username);
-        ew.eq("password", password);
-        Integer userLogin = userMapper.selectCount(ew);
-        return userLogin;
+    @Test
+    public void redis(){
+        Jedis jedis=new Jedis("localhost");
+        System.out.println("服务器正在运行"+jedis.ping());
     }
+
 
     /**
      * 检查用户名合法性
@@ -46,8 +53,6 @@ public class UserServiceImpl extends ServiceImpl implements UserService {
      * @param username
      * @return
      */
-/*    @Value("${username}")
-    private String illegalUsername;*/
     @Override
     public JSONObject checkUsername(String username) {
         JSONObject jsonObject = new JSONObject();
@@ -68,6 +73,7 @@ public class UserServiceImpl extends ServiceImpl implements UserService {
         }
         return jsonObject;
     }
+
 
     /**
      * 保存用户信息
@@ -94,4 +100,6 @@ public class UserServiceImpl extends ServiceImpl implements UserService {
         return jsonObject;
 
     }
+
+
 }

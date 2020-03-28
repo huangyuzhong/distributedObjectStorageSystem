@@ -49,17 +49,6 @@ public class RegisterController {
     public JSONObject saveUser(User user){
         JSONObject jsonObject=userService.saveUser(user);
 
-       /*
-       String saveRes=userService.saveUser(user);
-        if(saveRes.equals("注册成功")){
-            modelAndView.addObject("msg","注册成功");
-            modelAndView.setViewName("/login/index");
-        }else {
-            modelAndView.addObject("msg",saveRes);
-            modelAndView.setViewName("/register/index");
-        }
-        */
-
         return jsonObject;
     }
 }

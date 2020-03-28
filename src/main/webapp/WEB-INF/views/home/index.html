@@ -2,9 +2,319 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>欢迎XXX</title>
+    <title>分布式对象存储</title>
 </head>
+<script src="https://cdn.bootcss.com/jquery/1.9.1/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+<style>
+    html {
+        padding: 10px;
+    }
+
+    .byRight {
+        float: right;
+    }
+
+    .allPadding {
+        padding: 10px;
+    }
+
+    .bottonPadding {
+        padding-bottom: 10px;
+    }
+
+    .path {
+        font-size: 11px;
+    }
+    .buttonToA{
+    /*消除button的默认样式*/
+        margin: 0;
+        padding: 0;
+        border: 0px;
+        outline: none;
+        background-color: white;
+    }
+</style>
+<script>
+    function lgoutBtnClicked() {
+        window.location.href = "/login/lgout";
+    }
+
+
+    (function () {
+        /*显示当前目录文件*/
+        function ShowList() {
+            $("#myTbody").empty();
+            $.ajax({
+                type: "post",
+                url: "/file/getPresentFileList",
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code="001"){
+                        for (var i in msg.dirList) {
+                            var html = $("<tr></tr>");
+                            html.append("<td><input type='checkbox'></td>");
+                            html.append("<td><a class='filename' data-opration='openDir'>" + msg.dirList[i].name + "</a></td>");
+                            html.append("<td>-</td>");
+                            html.append("<td>" + msg.dirList[i].time + "</td>");
+                            html.append("<td>" +
+                                "<div class='btn-group bottonPadding' role='group' aria-label='...'>" +
+                                "<button type='button' class='btn btn-default' data-opration='renamer'>重命名</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='move'>移动</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='delete'>删除</button>" +
+                                "</div></td>");
+                            html.appendTo("#myTbody");
+                        }
+                        for (var i in msg.fileList) {
+                            var html = $("<tr></tr>");
+                            html.append("<td><input type='checkbox' ></td>");
+                            html.append("<td><a class='filename' data-opration='openDir'>" + msg.fileList[i].name + "</a></td>");
+                            html.append("<td>" + msg.fileList[i].len + "</td>");
+                            html.append("<td>" + msg.fileList[i].time + "</td>");
+                            html.append("<td>" +
+                                "<div class='btn-group bottonPadding' role='group' aria-label='...'>" +
+                                "<button type='button' class='btn btn-default' data-opration='renamer'>重命名</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='move'>移动</button>" +
+                                "<button type='button' class='btn btn-default' data-opration='delete'>删除</button>" +
+                                "</div></td>");
+                            html.appendTo("#myTbody");
+                        }
+                        EventHandler();
+                    }else console.log(msg.msg);
+                }
+            });
+        }
+
+        function EventHandler() {
+            /*重命名*/
+            $("button[data-opration=renamer]").off().on('click', function () {
+                var oldName = $(this).parents('tr').find('.filename').html();
+                var currentFileName = $(this).parents('tr').find('.filename')
+                console.log($("#renameTarget").html());
+                var newName = prompt("请输入新名称");
+                if (newName != null && newName != "") {
+                    location.href="/file/rename?oldName="+oldName+"&newName="+newName;
+  /*                  $.ajax({
+                        type: "post",
+                        url: "/file/rename",
+                        data: {
+                            oldName: oldName,
+                            newName: newName
+                        },
+                        dataType: "json",
+                        success: function (msg) {
+                            alert(msg.msg);
+                            if (msg.code == "001") {
+                                currentFileName.html(newName);
+                                console.log($("#renameTarget").html());
+                            }
+                        }
+                    });*/
+                }
+              /*  $(this).parents('tr').find('.filename').removeAttr("id");*/
+            });
+            /*移动*/
+            $("button[data-opration=move]").off().on('click', function () {
+                var filename = $(this).parents('tr').find('.filename').html();
+            });
+            /*删除*/
+            $("button[data-opration=delete]").off().on('click', function () {
+                var delPath = $(this).parents('tr').find('.filename').html();
+                $(this).parents('tr').attr("id", "deleteTarget");
+                if (confirm("确认删除?")) {
+                    $.ajax({
+                        type: "post",
+                        url: "/file/delete",
+                        data: {
+                            delPath: delPath
+                        },
+                        dataType: "json",
+                        success: function (msg) {
+                            alert(msg.msg);
+                            if (msg.code = "001") {
+                                $("#deleteTarget").remove();
+                            }
+                        }
+                    });
+                } else {
+                }
+            });
+            /*打开下一级目录*/
+            $("a[data-opration=openDir]").off().on("click", function () {
+                var dirPath = $(this).html();
+                $.ajax({
+                    type: "post",
+                    url: "/file/openDir",
+                    data: {
+                        dirPath: dirPath
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        ShowList();
+                        var html = $("<a> > </a>" +
+                            "<button class='path buttonToA' data-opration='openTheDir'>"+dirPath+"</button>");
+                        html.appendTo("#breadPath");
+                    }
+                });
+            });
+            /*左侧功能区--查看所有文件*/
+            $("button[data-opration=allFile]").off().on("click",function () {
+                var dirPath="/";
+                $.ajax({
+                    type: "post",
+                    url: "/file/openTheDir",
+                    data: {
+                        targetPath: dirPath
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        ShowList();
+                        //删除面包屑重新生成
+                        $("#breadPath").empty();
+                        var breadHead= $("<button class='path buttonToA' id='root' data-opration='openTheDir'>全部文件</button>");
+                        breadHead.appendTo("#breadPath");
+                    }
+                });
+            });
+            /*新建目录*/
+            $("button[data-opration=mkdir]").off().on("click", function () {
+                var dirName = prompt("请输入文件夹名");
+                if (dirName != null && dirName != "") {
+                    $.ajax({
+                        type: "post",
+                        url: "/file/mkdir",
+                        data: {
+                            dirName: dirName
+                        },
+                        dataType: "json",
+                        success: function (msg) {
+                            alert(msg.msg);
+                            if (msg.code == "001") {
+                                //已确认建立了文件夹，刷新列表
+                                ShowList();
+                            }
+                        }
+                    });
+                }
+            });
+            /* 从面包屑打开指定路径*/
+            $("button[data-opration=openTheDir]").off().on("click",function () {
+                var path;
+                var clickedBread=$(this);
+                var tmp=$(this).attr("id");
+                if(tmp=="root"){
+                    path="/";
+                    //根节点，什么也不做，直接传 “/”
+                }else {
+                    //确定path
+                    path=clickedBread.html();
+                    clickedBread=clickedBread.prev().prev();
+                    while(clickedBread.attr("id")!="root"){
+                        path=clickedBread.html()+"/"+path;
+                        clickedBread=clickedBread.prev().prev();
+                    }
+                    path="/"+path;
+                    console.log(path);
+                }
+                $.ajax({
+                    type: "post",
+                    url: "/file/openTheDir",
+                    data: {
+                        targetPath: path
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        ShowList();
+                        //删除面包屑重新生成
+                        $("#breadPath").empty();
+                        var breadHead= $("<button class='path buttonToA' id='root' data-opration='openTheDir'>全部文件</button>");
+                        breadHead.appendTo("#breadPath");
+                        for (var i in msg.path){
+                            if(msg.path[i]=="/") continue;
+                            var breadBreak=$("<a> > </a>");
+                            breadBreak.appendTo("#breadPath");
+                            var bread=$("<button class='path buttonToA' data-opration='openTheDir'>"+msg.path[i]+"</button>");
+                            bread.appendTo("#breadPath");
+                        }
+                    }
+                });
+
+            });
+        }
+
+
+        ShowList();
+
+
+    })();
+
+
+</script>
 <body>
+<ul class="nav nav-tabs">
+    <li role="presentation" class="active"><a href="#">网盘</a></li>
+    <li role="presentation"><a href="#">搜索</a></li>
+    <li role="presentation"><a href="#">个人中心</a></li>
+
+    <div class="btn-group byRight" role="group" aria-label="...">
+        <button type="button" class="btn btn-default" onclick="lgoutBtnClicked()">退出登录</button>
+    </div>
+
+</ul>
+<div class="row allPadding">
+    <div class="col-md-1">
+        <div class="btn-group-vertical" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" data-opration="allFile">全部文件</button>
+            <button type="button" class="btn btn-default">文档</button>
+            <button type="button" class="btn btn-default">音乐</button>
+            <button type="button" class="btn btn-default">图片</button>
+            <button type="button" class="btn btn-default">视频</button>
+            <button type="button" class="btn btn-default">其他</button>
+        </div>
+    </div>
+    <div class="col-md-11 ">
+        <div class="btn-group bottonPadding">
+            <button type="button" class="btn btn-default">上传文件</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">上传文件夹</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#">上传文件夹</a></li>
+            </ul>
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <div class="btn-group bottonPadding" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" data-opration="mkdir">新建目录</button>
+        </div>
+        <div id="breadPath">
+            <button class="path buttonToA" id="root" data-opration="openTheDir">全部文件</button>
+        </div>
+
+        <div style="height: 470px;overflow:auto">
+
+            <form action="" method="post">
+                <table class="table table-hover">
+                    <tr>
+                        <th><input type="checkbox">全选</input></th>
+                        <th>文件名</th>
+                        <th>文件大小</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                    <tbody id="myTbody"></tbody>
+                </table>
+            </form>
+
+        </div>
+
+
+
+    </div>
+</div>
 
 </body>
 </html>

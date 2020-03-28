@@ -1,4 +1,4 @@
-package com.taylor.hadoop_springboot;
+package com.taylor.hadoop_springboot.hadoop;
 
 import com.taylor.hadoop_springboot.entity.FileEntity;
 import org.apache.hadoop.conf.Configuration;
