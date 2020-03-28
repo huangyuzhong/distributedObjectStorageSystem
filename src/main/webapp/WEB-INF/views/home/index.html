@@ -96,24 +96,7 @@
                 var newName = prompt("请输入新名称");
                 if (newName != null && newName != "") {
                     location.href="/file/rename?oldName="+oldName+"&newName="+newName;
-  /*                  $.ajax({
-                        type: "post",
-                        url: "/file/rename",
-                        data: {
-                            oldName: oldName,
-                            newName: newName
-                        },
-                        dataType: "json",
-                        success: function (msg) {
-                            alert(msg.msg);
-                            if (msg.code == "001") {
-                                currentFileName.html(newName);
-                                console.log($("#renameTarget").html());
-                            }
-                        }
-                    });*/
                 }
-              /*  $(this).parents('tr').find('.filename').removeAttr("id");*/
             });
             /*移动*/
             $("button[data-opration=move]").off().on('click', function () {
