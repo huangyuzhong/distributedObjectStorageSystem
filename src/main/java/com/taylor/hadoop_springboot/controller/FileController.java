@@ -43,10 +43,11 @@ public class FileController {
      * @throws URISyntaxException
      */
     @RequestMapping("/mkdir")
-    @ResponseBody
-    public JSONObject mkdir(HttpServletRequest request,String dirName) throws InterruptedException, IOException, URISyntaxException {
+    public ModelAndView mkdir(HttpServletRequest request,String dirName) throws InterruptedException, IOException, URISyntaxException {
+        ModelAndView modelAndView=new ModelAndView("/home/fileOp");
         JSONObject jsonObject=fileService.mkdir(request,dirName);
-        return jsonObject;
+        modelAndView.addObject("json",jsonObject);
+        return modelAndView;
     }
 
     /**
@@ -71,11 +72,11 @@ public class FileController {
      * @return
      */
     @RequestMapping("/delete")
-    @ResponseBody
-    public JSONObject delete(HttpServletRequest request,String delPath) throws InterruptedException, IOException, URISyntaxException {
+    public ModelAndView delete(HttpServletRequest request,String delPath) throws InterruptedException, IOException, URISyntaxException {
+        ModelAndView modelAndView=new ModelAndView("/home/fileOp");
         JSONObject jsonObject=fileService.delete(request,delPath);
-
-        return jsonObject;
+        modelAndView.addObject("json",jsonObject);
+        return modelAndView;
     }
 
     /**
@@ -88,10 +89,11 @@ public class FileController {
      * @throws URISyntaxException
      */
     @RequestMapping("/openDir")
-    @ResponseBody
-    public JSONObject openDir(HttpServletRequest request,String dirPath) throws InterruptedException, IOException, URISyntaxException {
+    public ModelAndView openDir(HttpServletRequest request,String dirPath) throws InterruptedException, IOException, URISyntaxException {
+        ModelAndView modelAndView=new ModelAndView("/home/index");
         JSONObject jsonObject=fileService.entryDir(request,dirPath);
-        return jsonObject;
+        modelAndView.addObject("json",jsonObject);
+        return modelAndView;
     }
 
     /**
@@ -101,10 +103,11 @@ public class FileController {
      * @return
      */
     @RequestMapping("/openTheDir")
-    @ResponseBody
-    public JSONObject openTheDir(HttpServletRequest request,String targetPath) throws InterruptedException, IOException, URISyntaxException {
+    public ModelAndView openTheDir(HttpServletRequest request,String targetPath) throws InterruptedException, IOException, URISyntaxException {
+        ModelAndView modelAndView=new ModelAndView("/home/index");
         JSONObject jsonObject=fileService.entryTheDir(request,targetPath);
-        return jsonObject;
+        modelAndView.addObject("json",jsonObject);
+        return modelAndView;
     }
 
 }

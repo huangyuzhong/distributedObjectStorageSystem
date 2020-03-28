@@ -96,9 +96,22 @@
                 var newName = prompt("请输入新名称");
                 if (newName != null && newName != "") {
                     location.href="/file/rename?oldName="+oldName+"&newName="+newName;
-
                 }
-              
+            });
+
+            /*左侧功能区--查看所有文件*/
+            $("button[data-opration=allFile]").off().on("click",function () {
+                location.href="/home/index";
+            });
+
+            /*删除*/
+            $("button[data-opration=delete]").off().on('click', function () {
+                var delPath = $(this).parents('tr').find('.filename').html();
+                $(this).parents('tr').attr("id", "deleteTarget");
+                if (confirm("确认删除?")) {
+                    location.href="/file/delete?delPath="+delPath;
+                } else {
+                }
             });
         }
 

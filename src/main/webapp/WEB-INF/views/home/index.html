@@ -45,6 +45,7 @@
 
     (function () {
         /*显示当前目录文件*/
+        /*增加面包屑*/
         function ShowList() {
             $("#myTbody").empty();
             $.ajax({
@@ -107,27 +108,15 @@
                 var delPath = $(this).parents('tr').find('.filename').html();
                 $(this).parents('tr').attr("id", "deleteTarget");
                 if (confirm("确认删除?")) {
-                    $.ajax({
-                        type: "post",
-                        url: "/file/delete",
-                        data: {
-                            delPath: delPath
-                        },
-                        dataType: "json",
-                        success: function (msg) {
-                            alert(msg.msg);
-                            if (msg.code = "001") {
-                                $("#deleteTarget").remove();
-                            }
-                        }
-                    });
+                    location.href="/file/delete?delPath="+delPath;
                 } else {
                 }
             });
             /*打开下一级目录*/
             $("a[data-opration=openDir]").off().on("click", function () {
                 var dirPath = $(this).html();
-                $.ajax({
+                location.href="/file/openDir?dirPath="+dirPath;
+               /* $.ajax({
                     type: "post",
                     url: "/file/openDir",
                     data: {
@@ -140,46 +129,17 @@
                             "<button class='path buttonToA' data-opration='openTheDir'>"+dirPath+"</button>");
                         html.appendTo("#breadPath");
                     }
-                });
+                });*/
             });
             /*左侧功能区--查看所有文件*/
             $("button[data-opration=allFile]").off().on("click",function () {
-                var dirPath="/";
-                $.ajax({
-                    type: "post",
-                    url: "/file/openTheDir",
-                    data: {
-                        targetPath: dirPath
-                    },
-                    dataType: "json",
-                    success: function (msg) {
-                        ShowList();
-                        //删除面包屑重新生成
-                        $("#breadPath").empty();
-                        var breadHead= $("<button class='path buttonToA' id='root' data-opration='openTheDir'>全部文件</button>");
-                        breadHead.appendTo("#breadPath");
-                    }
-                });
+                location.href="/home/index";
             });
             /*新建目录*/
             $("button[data-opration=mkdir]").off().on("click", function () {
                 var dirName = prompt("请输入文件夹名");
                 if (dirName != null && dirName != "") {
-                    $.ajax({
-                        type: "post",
-                        url: "/file/mkdir",
-                        data: {
-                            dirName: dirName
-                        },
-                        dataType: "json",
-                        success: function (msg) {
-                            alert(msg.msg);
-                            if (msg.code == "001") {
-                                //已确认建立了文件夹，刷新列表
-                                ShowList();
-                            }
-                        }
-                    });
+                    location.href="/file/mkdir?dirName="+dirName;
                 }
             });
             /* 从面包屑打开指定路径*/
@@ -201,7 +161,8 @@
                     path="/"+path;
                     console.log(path);
                 }
-                $.ajax({
+                location.href="/file/openTheDir?targetPath="+path;
+                /*$.ajax({
                     type: "post",
                     url: "/file/openTheDir",
                     data: {
@@ -222,7 +183,7 @@
                             bread.appendTo("#breadPath");
                         }
                     }
-                });
+                });*/
 
             });
         }
