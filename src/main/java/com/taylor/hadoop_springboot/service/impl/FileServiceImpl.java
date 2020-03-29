@@ -38,13 +38,36 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
         if (hadoopDao.ifDirExist(username,path)) {
-            jsonObject.put("code","001");
+          /*  jsonObject.put("code","001");*/
             jsonObject.put("fileList", hadoopDao.getPresentFileList(username, path));
             jsonObject.put("dirList", hadoopDao.getPresentDirList(username, path));
+
+            /*-----------------面包屑导航-----------------------*/
+            List list=new ArrayList();
+/*            list.add("/");*/
+            if (path.length()>1){
+                path=path.substring(1);
+                while (path.indexOf("/")!=-1){
+                    int strEndPlace=path.indexOf("/");
+                    list.add(path.substring(0,strEndPlace));
+                    path=path.substring(strEndPlace+1);
+                }
+                if (path!=null){
+                    list.add(path);
+                }
+            }
+            /*-----------------END-----------------------*/
+
+            jsonObject.put("path",list);    //面包屑导航
+
+
         }else {
             jsonObject.put("msg","找不到请求的路径");
-            jsonObject.put("code","009");
+           /* jsonObject.put("code","009");*/
         }
         return jsonObject;
     }
@@ -61,6 +84,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
         String completePath=path+dirName;
 
         if (hadoopDao.ifAlreadyExist(username,dirName,path)){
@@ -93,6 +119,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
 
         if(!hadoopDao.ifAlreadyExist(username,newName,path)){
             if (hadoopDao.move(username,path+oldname,path+newName)){
@@ -103,7 +132,7 @@ public class FileServiceImpl implements FileService {
                 jsonObject.put("code","010");
             }
         }else {
-            jsonObject.put("msg","操作失败\n目标路径已存在");
+            jsonObject.put("msg","操作失败,目标路径已存在");
             jsonObject.put("code","007");
         }
 
@@ -124,6 +153,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
         if (hadoopDao.ifAlreadyExist(username,oldPath,newPath)){
             jsonObject.put("msg","操作失败\n目标路径已存在");
             jsonObject.put("code","007");
@@ -149,6 +181,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
 
         if (hadoopDao.ifAlreadyExist(username,fileODirName,path)){
             hadoopDao.download(username,path+fileODirName,winPath);
@@ -175,6 +210,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
         if(hadoopDao.ifAlreadyExist(username,fileODirName,path)){
             if (hadoopDao.delete(username,path+fileODirName)){
                 jsonObject.put("code","001");
@@ -203,6 +241,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
 
         String fileName=winPath.substring(winPath.lastIndexOf("/"));
         if (hadoopDao.ifAlreadyExist(username,fileName,path)){
@@ -231,6 +272,9 @@ public class FileServiceImpl implements FileService {
         Cookie[] cookies=request.getCookies();
         String username=jedis.get(cookies[0].getValue());
         String path=jedis.get(username+"Path");
+        if (!path.equals("/")){
+            path=path+"/";
+        }
 
         List<FileEntity> list=hadoopDao.getPresentDirList(username,path);
         for (FileEntity fileEntity:list){
@@ -260,7 +304,8 @@ public class FileServiceImpl implements FileService {
         String username=jedis.get(cookies[0].getValue());
         if (hadoopDao.ifDirExist(username,targetPath)){
             jedis.setex(username+"Path",deadTime,targetPath);
-            List list=new ArrayList();
+            /*            被弃用的面包屑（由getPresentList代替）                  */
+/*            List list=new ArrayList();
             list.add("/");
             if (targetPath.length()>1){
                 targetPath=targetPath.substring(1);
@@ -274,7 +319,7 @@ public class FileServiceImpl implements FileService {
                 }
             }
 
-            jsonObject.put("path",list);    //面包屑导航
+            jsonObject.put("path",list);    //面包屑导航*/
             jsonObject.put("code","001");
             return jsonObject;
         }else {
@@ -284,5 +329,15 @@ public class FileServiceImpl implements FileService {
         return jsonObject;
     }
 
+    /**
+     * 合并两个json信息
+     * @param msgJson
+     * @param pathNListJson
+     * @return
+     */
+    JSONObject copyJson(JSONObject msgJson,JSONObject pathNListJson){
+        pathNListJson.put("msg",msgJson.get("msg"));
+        return pathNListJson;
+    }
 
 }
